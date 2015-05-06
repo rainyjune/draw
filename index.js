@@ -133,5 +133,5 @@ function ongoingTouchIndexById(idToFind) {
  */
 function log(msg) {
   var p = document.getElementById('log');
-  p.innerHTML = msg + "\n" + p.innerHTML;
+  p.insertAdjacentHTML("afterbegin", msg + "\n");
 }
