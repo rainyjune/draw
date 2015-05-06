@@ -3,6 +3,7 @@ window.addEventListener("load", initAll, false);
 function initAll() {
   document.getElementById("initButton").addEventListener("click", startup, false);
   document.getElementById("clearButton").addEventListener("click", clearCanvas, false);
+  document.getElementById("saveButton").addEventListener("click", saveCanvas, false);
 }
 
 function startup() {
@@ -13,12 +14,23 @@ function startup() {
   el.addEventListener("touchleave", handleEnd, false);
   el.addEventListener("touchmove", handleMove, false);
   log("initialized.");
+  
+  var ctx = el.getContext("2d");
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, el.width, el.height);
 }
 
 function clearCanvas() {
   var el = document.getElementsByTagName("canvas")[0];
   var ctx = el.getContext("2d");
   ctx.clearRect(0, 0, el.width, el.height);
+}
+
+function saveCanvas() {
+  var el = document.getElementsByTagName("canvas")[0];
+  var img = el.toDataURL("image/png");
+  document.getElementById("previewImg").src = img;
+  //window.location.href = img;
 }
 
 var ongoingTouches = new Array();
