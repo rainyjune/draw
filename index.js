@@ -20,8 +20,11 @@ function handleStart(evt) {
         
   for (var i=0; i < touches.length; i++) {
     log("touchstart:"+i+"...");
-    ongoingTouches.push(copyTouch(touches[i]));
     var color = colorForTouch(touches[i]);
+    var thisTouchCopy = copyTouch(touches[i]);
+    thisTouchCopy.color = color;
+    ongoingTouches.push(thisTouchCopy);
+    
     ctx.beginPath();
     ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0,2*Math.PI, false);  // a circle at the start
     ctx.fillStyle = color;
@@ -37,10 +40,10 @@ function handleMove(evt) {
   var touches = evt.changedTouches;
 
   for (var i=0; i < touches.length; i++) {
-    var color = colorForTouch(touches[i]);
     var idx = ongoingTouchIndexById(touches[i].identifier);
 
     if(idx >= 0) {
+      var color = ongoingTouches[idx].color;
       log("continuing touch "+idx);
       ctx.beginPath();
       log("ctx.moveTo("+ongoingTouches[idx].pageX+", "+ongoingTouches[idx].pageY+");");
@@ -50,8 +53,11 @@ function handleMove(evt) {
       ctx.lineWidth = 4;
       ctx.strokeStyle = color;
       ctx.stroke();
+      
+      var thisTouchCopy = copyTouch(touches[i]);
+      thisTouchCopy.color = color;
 
-      ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
+      ongoingTouches.splice(idx, 1, thisTouchCopy);  // swap in the new touch record
       log(".");
     } else {
       log("can't figure out which touch to continue");
@@ -67,10 +73,10 @@ function handleEnd(evt) {
   var touches = evt.changedTouches;
 
   for (var i=0; i < touches.length; i++) {
-    var color = colorForTouch(touches[i]);
     var idx = ongoingTouchIndexById(touches[i].identifier);
 
     if(idx >= 0) {
+      var color = ongoingTouches[idx].color;
       ctx.lineWidth = 4;
       ctx.fillStyle = color;
       ctx.beginPath();
@@ -121,6 +127,10 @@ function ongoingTouchIndexById(idToFind) {
   return -1;    // not found
 }
 
+/**
+ * 
+ * Note: This function will slow down your performance.
+ */
 function log(msg) {
   var p = document.getElementById('log');
   p.innerHTML = msg + "\n" + p.innerHTML;
