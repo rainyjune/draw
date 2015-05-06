@@ -43,6 +43,31 @@ function handleStart(event) {
 
 function handleMove(event) {
   //console.log("touchmove event:", event);
+  event.preventDefault();
+  var el = document.querySelector("#canvas");
+  var ctx = el.getContext("2d");
+  var touches = event.changedTouches;
+  for (var i = 0, len = touches.length; i < len; i++) {
+    var thisTouch = touches[i];
+    var color = colorForTouch(thisTouch);
+    var idx = ongoingTouchIndexById(thisTouch.identifier);
+    
+    if (idx >= 0) {
+      log("continue touch " + idx);
+      ctx.beginPath();
+      //log()
+      ctx.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
+      ctx.lineTo(thisTouch.pageX, thisTouch.pageY);
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = color;
+      ctx.stroke();
+      
+      ongoingTouches.splice(idx, 1, Object.create(thisTouch));
+      log(".");
+    } else {
+      log("can't figure out which touch to continue");
+    }
+  }
 }
 
 function handleEnd(event) {
@@ -53,6 +78,7 @@ function handleCancel(event) {
   //console.log("touchcancel event:", event);
 }
 
+/* Works better on iOS */
 function colorForTouch(touch) {
   var r = touch.identifier % 16;
   var g = Math.floor(touch.identifier / 3) % 16;
@@ -63,6 +89,15 @@ function colorForTouch(touch) {
   var color = "#" + r + g + b;
   log("color for touch with identifier " + touch.identifier + " = " + color);
   return color;
+}
+
+function ongoingTouchIndexById(identifier) {
+  for (var i = 0, len = ongoingTouches.length; i < len; i++) {
+    if (ongoingTouches[i].identifier === identifier) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 function log(msg) {
