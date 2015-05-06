@@ -1,4 +1,9 @@
-window.onload = startup;
+window.addEventListener("load", initAll, false);
+
+function initAll() {
+  document.getElementById("initButton").addEventListener("click", startup, false);
+  document.getElementById("clearButton").addEventListener("click", clearCanvas, false);
+}
 
 function startup() {
   var el = document.getElementsByTagName("canvas")[0];
@@ -9,6 +14,13 @@ function startup() {
   el.addEventListener("touchmove", handleMove, false);
   log("initialized.");
 }
+
+function clearCanvas() {
+  var el = document.getElementsByTagName("canvas")[0];
+  var ctx = el.getContext("2d");
+  ctx.clearRect(0, 0, el.width, el.height);
+}
+
 var ongoingTouches = new Array();
 
 function handleStart(evt) {
